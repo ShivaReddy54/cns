@@ -1,0 +1,269 @@
+7 9 10 11 12
+
+
+
+exp == 1.1:
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+
+
+int main(){
+    
+    char s[100];
+    scanf("%s", s);
+    int n; scanf("%d", &n);
+    printf("Original: %s\n", s);
+    
+    for(int i=0; i<strlen(s); i++){
+        char ch = s[i];
+        
+        if(isalnum(ch)){
+            if(islower(ch)){
+                ch = (ch - 'a' - n + 26) % 26 + 'a';
+            }
+            else if(isupper(ch)){
+                ch = (ch - 'A' - n + 26) % 26 + 'A';
+            }
+            else if(isdigit(ch)){
+                ch = (ch - '0' - n + 10) % 10 + '0';
+            }
+        }
+        else {
+            printf("invalid\n");
+        }
+        s[i] = ch;
+    }
+    
+    
+    printf("Encrypted: %s\n", s);
+    
+}
+
+--------------------------------------------------------------------------------------------------------
+
+
+
+EXP == 1.2:
+
+#include <stdio.h>
+#include <string.h>
+
+char v[27] = "zyxwvutsrqponmlkjihgfedcba";
+
+
+int main(){
+    char s[100];
+    scanf("%s", s);
+    printf("Original: %s\n", s);
+    
+    for(int i=0; i<strlen(s); i++){
+        char ch = s[i];
+        
+        ch = v[ch - 'a'];
+        
+        s[i] = ch;
+    }
+    
+    printf("Encrypted: %s", s);
+    
+}
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+EXP == 2.2:
+
+
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <stdlib.h>
+
+int main() {
+    srand(time(0));
+    
+    char s[100], c[100], k[100];
+    scanf("%s", s);
+    printf("Original: %s\n", s);
+    
+    for(int i = 0; i < strlen(s); i++) k[i] = rand() % 256;
+    
+    for(int i = 0; i < strlen(s); i++)
+        c[i] = s[i] ^ k[i];
+    
+    printf("Encrypted: ");
+    for(int i = 0; i < strlen(s); i++)
+        printf("%02X", (unsigned char)c[i]);
+}
+
+
+
+
+EXP == 2.1:
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void to_upper_no_space(char *s) {
+    int j = 0;
+    for (int i = 0; s[i]; i++)
+        if (s[i] != ' ') s[j++] = toupper(s[i]);
+    s[j] = '\0';
+}
+
+void str_to_num(const char *s, int *num) {
+    for (int i = 0; s[i]; i++) num[i] = s[i] - 'A';
+}
+
+int main() {
+    char str[100], key[100], cipher[100];
+    int numstr[100], numkey[100], numcipher[100];
+
+    printf("Enter text to encrypt:\n");
+    gets(str);
+    to_upper_no_space(str);
+    
+    printf("Enter key text:\n");
+    gets(key);
+    to_upper_no_space(key);
+
+    str_to_num(str, numstr);
+    str_to_num(key, numkey);
+
+    for (int i = 0; str[i]; i++) {
+        numcipher[i] = (numstr[i] + numkey[i]) % 26;
+        cipher[i] = numcipher[i] + 'A';
+    }
+    cipher[strlen(str)] = '\0';
+
+    printf("Cipher Text: %s\n", cipher);
+    return 0;
+}
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+
+
+EXP == 4.1:
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+int gcd(int a, int b){
+    if(b == 0) return a;
+    return gcd(b, a%b);
+}
+
+int main(){
+    
+    int p, q;
+    scanf("%d%d", &p, &q);
+    
+    int n = p * q;
+    int phi = (p - 1) * (q - 1);
+    int e = 2;
+    while(e < phi && gcd(e, phi) != 1) e++;
+    
+    int d = 1;
+    while((d *e)%phi != 1) d++;
+    
+    int msg = 65;
+    int enc = (int)pow(msg, e) % n;
+    int dec = (int)pow(enc, d) % n;
+    
+    printf("Public Key: (%d, %d)\n", e, n);
+    printf("Private Key: (%d, %d)\n", d, n);
+    printf("Original Message: %d\n", msg);
+    printf("Encrypted Message: %d\n", enc);
+    printf("Decrypted Message: %d\n", dec);
+    
+}
+
+ 
+
+-------------------------------------------------------------------------------------------------
+
+
+EXP == 4.2:
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+int main(){
+    
+    int p, g;
+    scanf("%d%d", &p, &g);
+    int a, b;
+    scanf("%d%d", &a, &b);
+    
+    int A = (int)pow(g, a) % p;
+    int B = (int)pow(g, b) % p;
+    
+    int keyA = (int)pow(B, a) % p;
+    int keyB = (int)pow(A, b) % p;
+    
+    printf("Public Values: p = %d, g = %d\n", p, g);
+    printf("Private Keys: a = %d, b = %d\n", a, b);
+    printf("Computed Public Keys: A = %d, B = %d\n", A, B);
+    printf("Shared Secret Key for A: %d\n", keyA);
+    printf("Shared Secret Key for B: %d\n", keyB);
+    
+}
+
+
+
+---------------------------------------------------------------------------------------------------------
+
+EXP == 4.3:
+
+
+#include <stdio.h>
+#include <math.h>
+
+long long mod_exp(long long base, long long exp, long long mod) {
+    if (exp == 0) return 1;
+    long long half = mod_exp(base, exp / 2, mod);
+    half = (half * half) % mod;
+    return (exp % 2 == 0) ? half : (half * base) % mod;
+}
+
+
+int main() {
+    long long p = 23, g = 5, x = 6;
+    long long y = mod_exp(g, x, p);
+
+    long long k = 15;
+    long long a = mod_exp(g, k, p);
+
+    char plaintext;
+    printf("Enter a character to encrypt: ");
+    scanf(" %c", &plaintext);
+    
+    long long M = (long long)plaintext;
+    long long b = (mod_exp(y, k, p) * M) % p;
+
+    long long decrypted = (b * mod_exp(a, p - 1 - x, p)) % p;
+    printf("Ciphertext: (%lld, %lld)\n", a, b);
+    printf("Decrypted Message: %c\n", (char)decrypted);
+
+    return 0;
+}
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
