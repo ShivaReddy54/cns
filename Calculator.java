@@ -1,5 +1,5 @@
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+
+import java.rmi.*;
 
 // Remote Interface
 public interface Calculator extends Remote {
